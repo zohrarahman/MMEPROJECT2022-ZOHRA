@@ -1,0 +1,1071 @@
+module S1AP_tempalates
+{
+	import from S1AP_CommonDataTypes language "ASN.1:1997" all;
+	import from S1AP_Constants language "ASN.1:1997" all;
+	import from S1AP_Containers language "ASN.1:1997" all;
+	import from S1AP_IEs language "ASN.1:1997" all;
+	import from S1AP_PDU_Contents language "ASN.1:1997" all;
+	import from S1AP_PDU_Descriptions language "ASN.1:1997" all;
+
+	//ENB-TESTSYSTEM,SUT-MME//
+
+//ENB-SETUP REQUEST
+//MME-SETUP RESPONSE
+
+template S1AP_PDU S1AP_PDU_SETUP_REQUEST_S_T1:=//"ENBID+ENB NAME+TAI LIST+PAGING DRX";
+{
+InitiatingMessage:=
+{
+	procedureCode:= id_S1Setup,
+	 criticality:=	reject,
+	 value_:=
+	 {
+		 S1SetupRequest:=
+	 		{
+ 				protocolIEs:=	
+				{
+					{
+						    id:=Global_ENB_ID,
+							CRITICALITY:= reject,	
+							value_:=
+								{
+
+ 										Global_ENB_ID := 
+											{
+											pLMNidentity := '123456'O,
+ 											eNB_ID	:= {macroENB_ID := '00000000000000001111'B},
+ 											iE_Extensions	:= omit
+											
+									        }	
+
+								}
+						},
+						{
+ 						   id:=eNBname,
+							CRITICALITY :=ignore,
+							value_:=
+								{
+								ENBname:="aric-eNB"
+								}
+						},
+
+                        {
+                        id:=SupportedTAs,
+						CRITICALITY:= reject,
+ 					    value_:=
+								{
+									SupportedTAs := 
+										{
+											{tAC := '0001'O, broadcastPLMNs := {'123456'O}, iE_Extensions := omit},
+											{tAC := '0002'O, broadcastPLMNs := {'123456'O}, iE_Extensions := omit},
+											{tAC := '0003'O, broadcastPLMNs := {'123456'O, '123459'O}, iE_Extensions := omit}
+								        }
+								}
+
+						},
+
+						{
+                         id:=DefaultPagingDRX,
+						 CRITICALITY :=ignore,	
+						 value_:=
+								{
+									PagingDRX := 
+										{
+											PagingDRX:= v32
+									    }
+								}
+
+						}
+						
+                }
+          }
+       }
+  }
+}
+
+
+template S1AP_PDU S1AP_PDU_SETUP_RESPONSE_R_T1:=//"GUMMEI+MME NAME+ MME CAPACITY";
+{
+SUCCESSFUL OUTCOME:=
+{
+	procedureCode:= id_S1Setup,
+	 criticality:=	reject,
+	 value_:=
+	 {
+		 S1SetupResponse:=
+	 		{
+ 				protocolIEs:=	
+				{
+					{
+						    id:=MMEname,
+							CRITICALITY:= ignore,	
+							value_:=
+								{
+
+ 										MMEname := mme81        
+
+								}
+						},
+						{
+ 						    id:=ServedGUMMEIs,
+							CRITICALITY :=reject,
+							value_:=
+								{
+								ServedGUMMEIs:=
+										{
+ 											servedPLMNs:=	'00f110'O,
+ 											servedGroupIDs:= '032b'0,
+ 											servedMMECs:= '51'0
+										}
+
+
+								}
+						},
+
+                        {
+                        id:=RelativeMMECapacity,
+						CRITICALITY:= ignore,
+ 					    value_:=
+								{
+									RelativeMMECapacity:=255
+								}
+						}
+						
+                }
+          }
+       }
+  }
+}
+
+
+template S1AP_PDU S1AP_PDU_IUM_S_T1 :=//"ENB S1AP UEID+ ECGI+ TAI+ RRC CONNECTION CAUSE+NAS:EMM:ATTACH REQUEST+ESM:PDN CONNECTIVITY REQUEST";
+  {
+	InitiatingMessage:=
+		{
+		procedureCode:= id_initialUEMessage,
+		 criticality:=ignore,
+		 value_:=
+			 {
+		 InitialUEMessage:=
+	 			{
+ 					protocolIEs:=	
+					{
+							{
+						    id:=eNB_UE_S1AP_ID	,
+							CRITICALITY:= reject,	
+							value_:=
+								{
+
+ 										ENB_UE_S1AP_ID := 1220
+											
+
+								}
+						},
+										{
+ 						   id:=NAS_PDU,
+							CRITICALITY :=reject,
+							value_:=
+								{
+								NAS_PDU	:=
+								{
+									ProtocolDiscriminator:='0111'B,  //eps mobility management messages 
+ 									Securityheadertype:='0000'B,  //NAS Plain message ,no security
+									AttachRequestMessageIdentity:='01000001'B,   //attach request messagetype
+									EPSAttachType:='0010'B,//  0- spare,010-EPS/IMSI ATTACH
+									NASkeyidentifier:='100'B,
+									EPSmobilityidentity:=
+									{
+										length_:=11,
+										identity:='110110'B    //11-LENGTH,0-even/used when guti is used and 110=identity of GUTI
+									}
+									UEnetworkcapbility:='1234568'B,
+									EPSmessageContainer:=
+									{
+										length_=20,
+										ESMmessagecontent:=
+											{
+											 ESM_Beareridentity:='00000010'B,
+											NAS_EPS_session_management_messages:='11010000'B// PDN CONNECTIVITY Request
+											}
+
+									
+           							}
+                               }
+                           }
+                        },
+                        {
+                        id:=TAI,
+						CRITICALITY:= reject,
+ 					    value_:=
+								{
+									TAI := 
+										{
+ 									  PLMNidentity:='123456'O,
+
+									  TAC:='1234'O,
+									  ProtocolExtensionContainer := omit
+
+								        }
+								}
+
+						},
+
+						{
+                         id:=EUTRAN_CGI,
+						 CRITICALITY:=ignore,	
+						 value_:=
+								{
+									EUTRAN_CGI := 
+										{
+ 									PLMNidentity:='123456'O,
+									CellIdentity:='0000000000000000000000001111'B,
+									ProtocolExtensionContainer := omit
+	
+									    }
+								}
+
+						},
+ 					
+						{
+ 
+                        id:=RRC_Establishment_Cause,
+						 CRITICALITY :=ignore,	
+						 value_:=
+								{
+									RRC-Establishment-Cause	 := mo-Signalling,
+										
+							    }
+
+						},
+ 					    {
+                         id:=S_TMSI	,
+						 CRITICALITY :=reject,	
+						 value_:=
+								{
+										S_TMSI := 
+										{
+										MME_Code:='12'O,
+ 									    M_TMSI:='12345678'O,
+ 									    ProtocolExtensionContainer := omit	
+										}
+
+										
+							    }
+
+						}
+				   }
+               }
+
+        }
+   }
+ }
+
+
+template S1AP_PDU S1AP_PDU_DL_NAS_R_T1 :=//"MME S1AP UEID+ENB S1AP UEID+NAS:EMM:AUTHENTICATION REQUEST";
+ {
+   INITIATING MESSAGE:=
+               {
+	            procedureCode:=id_downlinkNASTransport
+	            CRITICALITY	:=ignore,
+				value_:=
+					 {
+						 DownlinkNASTransport:=
+	 						
+							{
+ 							protocolIEs:=	
+								{
+									{
+						                 id:=MME_UE_S1AP_ID,
+							             CRITICALITY:= reject,	
+							             value_:=
+								              {
+
+ 										       MME_UE_S1AP_ID:= 1221
+											
+
+								               }
+						              },
+						              {
+ 						                  id:=eNB_UE_S1AP_ID	,
+							              CRITICALITY :=reject,
+							              value_:=
+								                {
+								                    ENB_UE_S1AP_ID := 121
+											
+								                 }
+						               },
+
+                                       {
+                                          id:=NAS_PDU,
+						                  CRITICALITY:= reject,
+ 					                      value_:=
+								             {
+								               NAS_PDU:=
+								                       {
+															ProtocolDiscriminator:='0111'B,  //eps mobility management messages 
+ 															Securityheadertype:='0000'B,  //NAS Plain message ,no security
+															AttachRequestMessageIdentity:='01010010'B,   //authentication request messagetype
+															NASkeyidentifier:='100'B,
+															sparehalfoctet:='0000'B,
+															Authenticationparameter_RAND:="e80526e22caab2fc9a4dda558c612e6a"
+ 															Authenticationparameter_AUTN:=	" 9113c6e1085"
+									
+           												}
+											 }	
+										
+										}
+
+						
+						
+                              }
+                        }
+
+				}
+		}
+		}
+  
+  
+  
+template S1AP_PDU S1AP_PDU_UL_NAS_S_T1 := //"MME S1AP UEID+ENB S1AP UEID+NAS:EMM:AUTHENTICATION RESPONSE+ECGI+TAI"
+                                         
+   {
+   INITIATING MESSAGE:=
+               {
+	            procedureCode:=id_uplinkNASTransport
+	            CRITICALITY	:=ignore,
+				value_:=
+					 {
+						 UplinkNASTransport:=
+	 						{
+ 							protocolIEs:=	
+								{
+										{
+						    id:=MME_UE_S1AP_ID,
+							CRITICALITY:= reject,	
+							value_:=
+								{
+
+ 										MME_UE_S1AP_ID:= 1222
+											
+
+								}
+						},
+						{
+ 						   id:=eNB_UE_S1AP_ID	,
+							CRITICALITY :=reject,
+							value_:=
+								{
+								ENB_UE_S1AP_ID := 122
+											
+								}
+						},
+
+                        {
+                        id:=NAS_PDU	,
+						CRITICALITY:= reject,
+ 					    value_:=
+								{
+								NAS_PDU	:=
+								{
+									Protocol_Discriminator:='0111'B,  //eps mobility management messages 
+ 									Security_header_type:='0000'B,  //NAS Plain message ,no security
+									authentication_response_Message_Identity:='01010011'B,   //authentication response messagetype
+									Authentication_Response_parameter:=
+									
+           						}
+                               }	
+								
+						},
+ 					    {
+                         id:=EUTRAN_CGI,
+						 CRITICALITY:=ignore,	
+						 value_:=
+								{
+									EUTRAN_CGI := 
+										{
+ 									PLMNidentity:='123456'O,
+									CellIdentity:='0000000000000000000000001111'B,
+									ProtocolExtensionContainer := omit
+	
+									    }
+								}
+
+						},
+ 						{
+                        id:=TAI,
+						CRITICALITY:= reject,
+ 					    value_:=
+								{
+									TAI := 
+										{
+ 									  PLMNidentity:='123456'O,
+
+									  TAC:='1234'O,
+									  ProtocolExtensionContainer := omit
+
+								        }
+								}
+
+						}
+						
+                }
+          } 
+}
+}
+}
+
+
+
+ template S1AP_PDU S1AP_PDU_DL_NAS_R_T2 := //"MME S1AP UEID+ENB S1AP UEID+NAS:EMM:SECURITY MODE COMMAND";
+
+ {
+   INITIATING MESSAGE:=
+               {
+	            procedureCode:=id_downlinkNASTransport
+	            CRITICALITY	:=ignore,
+				value_:=
+					 {
+						 DownlinkNASTransport:=
+	 						{
+ 							protocolIEs:=	
+								{
+										{
+						                   id:=MME_UE_S1AP_ID,
+							                CRITICALITY:= reject,	
+							                value_:=
+								                  {
+
+ 										              MME_UE_S1AP_ID:= 1223
+											
+
+								                   }
+						                  },
+						                  {
+ 						                   id:=eNB_UE_S1AP_ID	,
+							               CRITICALITY :=reject,
+							               value_:=
+								{
+								ENB_UE_S1AP_ID := 123
+											
+								}
+						},
+
+                        {
+                        id:=NAS_PDU	,
+						CRITICALITY:= reject,
+ 					    value_:=
+								{
+								NAS_PDU	:=
+								{
+									Protocol_Discriminator:='0111'B,  //eps mobility management messages 
+ 									Security_header_type:='0000'B,  //NAS Plain message ,no security
+									Security_Mode_Command_Message_Identity:='01011101'B,   //SecurityModeCommand messagetype
+									Selected_NAS_security_algorithm:='10001000'//EPS  INTEGRITY/ENCRYPTION ALGORITHM EIA4(BIT 1 TO 3=100,BIT 5 TO 7=100,4 bit and 8 bit are spare=0) 
+									NAS_key_identifier:='100'B,
+									spare_half_octet:=12456,
+ 								    Replayed_UE_security_capabilities:='00111111'O
+									
+           						}
+                               }	
+								
+						}
+
+						
+						
+                }
+          }
+		  }
+		  }
+		  }
+ 
+ 
+ template S1AP_PDU S1AP_PDU_UL_NAS_S_T2 :=  //"MME S1AP UEID+ENB S1AP UEID+NAS:EMM:SECURITY MODE COMPLETE+ECGI+TAI";
+
+                                            
+   {
+   INITIATING MESSAGE:=
+               {
+	            procedureCode:=id_uplinkNASTransport
+	            CRITICALITY	:=ignore,
+				value_:=
+					 {
+						 UplinkNASTransport:=
+	 						{
+ 							protocolIEs:=	
+								{
+										{
+						    id:=MME_UE_S1AP_ID,
+							CRITICALITY:= reject,	
+							value_:=
+								{
+
+ 										MME_UE_S1AP_ID:= 1224
+											
+
+								}
+						},
+						{
+ 						   id:=eNB_UE_S1AP_ID	,
+							CRITICALITY :=reject,
+							value_:=
+								{
+								ENB_UE_S1AP_ID := 124
+											
+								}
+						},
+
+                        {
+                        id:=NAS_PDU	,
+						CRITICALITY:= reject,
+ 					    value_:=
+								{
+								NAS_PDU	:=
+								   {
+									Protocol_Discriminator:='0111'B,  //eps mobility management messages 
+ 									Security_header_type:='0000'B,  //NAS Plain message ,no security
+ 								     Security_mode_complete_message_identity:='01011110'B,   //security_mode_complete_message_identity	
+								   }
+							  }
+									
+								
+						},
+ 					{
+                         id:=EUTRAN_CGI,
+						 CRITICALITY:=ignore,	
+						 value_:=
+								{
+									EUTRAN_CGI := 
+										{
+ 									PLMNidentity:='123456'O,
+									CellIdentity:='0000000000000000000000001111'B,
+									ProtocolExtensionContainer := omit
+	
+									    }
+								}
+
+						},
+ 						{
+                        id:=TAI,
+						CRITICALITY:= reject,
+ 					    value_:=
+								{
+									TAI := 
+										{
+ 									  PLMNidentity:='123456'O,
+
+									  TAC:='1234'O,
+									  ProtocolExtensionContainer := omit
+
+								        }
+								}
+
+						}	
+						
+                }
+          } 
+
+ 
+       }//
+  }
+  }
+
+ template S1AP_PDU S1AP_PDU_DL_NAS_R_T3 := //"MME S1AP UEID+ENB S1AP UEID+NAS:EMM:IDENTITY REQUEST";
+ {
+   INITIATING MESSAGE:=
+               {
+	            procedureCode:=id_downlinkNASTransport
+	            CRITICALITY	:=ignore,
+				value_:=
+					 {
+						 DownlinkNASTransport:=
+	 						{
+ 							protocolIEs:=	
+								{
+										{
+						    id:=MME_UE_S1AP_ID,
+							CRITICALITY:= reject,	
+							value_:=
+								{
+
+ 										MME_UE_S1AP_ID:= 1225
+											
+
+								}
+						},
+						{
+ 						   id:=eNB_UE_S1AP_ID	,
+							CRITICALITY :=reject,
+							value_:=
+								{
+								ENB_UE_S1AP_ID := 125
+											
+								}
+						},
+
+                        {
+                        id:=NAS_PDU	,
+						CRITICALITY:= reject,
+ 					    value_:=
+								{
+								NAS_PDU	:=
+								{
+									Protocol_Discriminator:='0111'B,  //eps mobility management messages 
+ 									Security_header_type:='0000'B,  //NAS Plain message ,no security
+									Identity_Request_Message_Identity:='01010101'B,   //identity request messagetype
+									Identity_type:='0010'B,
+									spare_half_octet:=0000,
+									
+           						}
+                               }	
+								
+						}
+
+						
+						
+                }
+          }
+		  }
+		  }
+		  }
+ 	
+	
+ template S1AP_PDU S1AP_PDU_UL_NAS_S_T3 := //"MME S1AP UEID+ENB S1AP UEID+NAS:EMM:IDENTITY RESPONSE IMEI+ECGI+TAI";
+  {
+   INITIATING MESSAGE:=
+               {
+	            procedureCode:=id_uplinkNASTransport
+	            CRITICALITY	:=ignore,
+				value_:=
+					 {
+						 UplinkNASTransport:=
+	 						{
+ 							protocolIEs:=	
+								{
+										{
+						    id:=MME_UE_S1AP_ID,
+							CRITICALITY:= reject,	
+							value_:=
+								{
+
+ 										MME_UE_S1AP_ID:= 1226
+											
+
+								}
+						},
+						{
+ 						   id:=eNB_UE_S1AP_ID	,
+							CRITICALITY :=reject,
+							value_:=
+								{
+								ENB_UE_S1AP_ID := 126
+											
+								}
+						},
+
+                        {
+                        id:=NAS_PDU	,
+						CRITICALITY:= reject,
+ 					    value_:=
+								{
+								NAS_PDU	:=
+								{
+									ProtocolDiscriminator:='0111'B,  //eps mobility management messages 
+ 									Securityheadertype:='0000'B,  //NAS Plain message ,no security
+									Identity_ResponseMessageIdentity:='01010110'B,   //identity response messagetype
+									Mobile_identity:= 
+									{
+									length_:=8,
+									identity_digit1:='0001'B,
+									Odd/even_inditication:=1,//odd number of identity digits
+									Mobile_identity_type:='010'B//IMEI
+									}
+								
+           						}
+                               }	
+								
+						},
+ 					{
+                         id:=EUTRAN_CGI,
+						 CRITICALITY:=ignore,	
+						 value_:=
+								{
+									EUTRAN_CGI := 
+										{
+
+ 									PLMNidentity:= '123456'O,
+
+
+									CellIdentity:='0000000000000000000000001111'B,
+
+									ProtocolExtensionContainer:= omit
+	
+									    }
+								}
+
+						},
+ 						{
+                        id:=TAI,
+						CRITICALITY:= reject,
+ 					    value_:=
+								
+								{
+									TAI := 
+										{
+
+ 									  PLMNidentity:='123456'O,
+
+									    TAC:='1234'O,
+
+									  ProtocolExtensionContainer := omit
+
+								        }
+								}
+
+						}
+						
+						
+                }
+          } 
+
+ 
+       }//
+  }
+  }	
+	
+ 
+ template S1AP_PDU S1AP_PDU_IUCSR_R_T1 := //"MME S1AP UEID+ENB S1AP UEID+E-RAB SETUP REQUEST: RAB ID+ EPS BEARER ID + QOS + SGW TEID +NAS:EMM:ATTACH ACCEPT+ESM:DEFAULT BEARERACTIVATION REQUEST+KENB";
+	{
+	InitiatingMessage:=
+		{
+		procedureCode:= id-InitialContextSetup,
+		 criticality:=reject,
+		 value_:=
+			 {
+		 InitialContextSetupRequest:=
+	 			{
+ 					protocolIEs:=	
+					{
+							{
+ 						id:=MME_UE_S1AP_ID	,
+							CRITICALITY:= reject,	
+							value_:=
+								{
+
+ 										MME_UE_S1AP_ID := 1228
+											
+
+								}
+						},
+						{	
+						    id:=eNB_UE_S1AP_ID	,
+							CRITICALITY:= reject,	
+							value_:=
+								{
+
+ 										ENB_UE_S1AP_ID := 128
+											
+
+								}
+						},
+										{
+ 						   id:=uEaggregateMaximumBitrate,
+							CRITICALITY :=reject,
+							value_:=
+								{
+								UEAggregateMaximumBitrate:=
+								                      {
+									                   uEaggregateMaximumBitRateDL:='01000000'B,   //APN-AMBR is 64 kbps + ((the binary coded value in 8 bits –01000000) * 8 kbps)
+ 													   uEaggregateMaximumBitRateUL:='01001011'B,   //APN-AMBR is 16 Mbps + ((the binary coded value in 8 bits - 01001010) * 1 Mbps),
+                               }
+                           }
+                        },
+                        {
+                        id:=E_RABToBeSetupListCtxtSUReq	,
+						CRITICALITY:= reject,
+ 					    value_:=
+								{
+									E_RABToBeSetupListCtxtSUReq := 
+										{
+ 									      E_RAB_ID:=56,
+ 										  E_RAB_Level_QoS_Parameters:=
+												 {
+												 QCI:=250,
+ 												 AllocationandRetentionPriority:=
+													{ 
+													Priority_Level:=2,// its a GBR bearer and the one represent conversational voice
+													 //value 1-14 aregiven priority and value 0 is logical error and 15 is no priority
+ 												    Pre_emption_Capability:='0'B,
+ 												    Pre-emption_Vulnerability:='0'B
+													}
+													
+												}
+										   
+ 										  Transport_Layer_Address:= '01111111000000000000000101100100'B,  // 7f000164
+ 										  GTP_TEID:='11111100000100001011010101101000'B ,//7e10b568
+										  NAS_PDU:= 
+												 {
+ 												 Protocol_Discriminator:='0111'B,  //eps mobility management messages 
+ 												Security_header_type:='0000'B,  //NAS Plain message ,no security
+ 												Attach_accept_message_identity:='01000010'B,//Attach accept message identity
+												EPSAttachResult:='0010'B,//  0- spare,010-EPS/IMSI ATTACH
+												SpareHalfoctet:='0000'B,
+ 												T3412_value:'11100000'B, //111 indicate the timer is deactivated and 00000 represent the timer value as 0
+												TAI_list:=	
+														 {
+									   						length_:=6,
+															spareBit:=0
+															typeof_List:='00'B, //list of TACs belonging to one PLMN, with non-consecutive TAC values
+															Numberofvalues:='00000'B,//it indicate the number of element is 1
+															MCC:=0,
+															MNC:='01'B,
+															TAC:='0110101010000000'B, // TAC for the 000-type list contain the most significant bit from bit8 of octet1 and leat significant bit from bit1 of octet2 
+														 }
+												EPSmessageContainer:=
+															{
+																length_=24,
+																ESMmessagecontent:=
+																	{
+																	EPS_Beareridentity:='0101'B,
+																    ProtocolDisriminator:='0010'B,
+ 																	 Procedure_transaction_identity:=1,
+																	 NAS_EPS_session_management_messages:='11000001'B,//  activate default EPS bearer Context request
+ 																	 EPS_QoS:=
+																				{
+																				length_:=9,
+																				QCI:=9,
+																				}
+ 																	 Access_point_name:=
+																				 {
+																				 Length:= 4,
+																				 APN:="apn"
+																	 PDN_address:= 
+																	     {
+																		 Length:=6,
+																		 spare bits:='00000'O,
+																		 PDNtype:='00100000'O,
+																		 PDNaddress:="192.168.3.129"
+																		 }
+
+
+																	 }
+           													}
+                                                   	 
+									 
+
+
+								           }
+								}
+
+						},
+
+						{
+                         id:=UESecurityCapabilities,
+						 CRITICALITY:=reject,	
+						 value_:=
+								{
+									UESecurityCapabilities := 
+										{
+ 									encryptionAlgorithms:='0010000000000000'B,
+									integrityProtectionAlgorithms:='0010000000000000'B,
+									ProtocolExtensionContainer := omit
+	
+									    }
+								}
+
+						},
+ 					{
+                         id:=SecurityKey,
+						 CRITICALITY:=reject,	
+						 value_:=
+								{
+									SecurityKey	:=  '061787a33046218e9a58bb029aeff40d6e2ea1a1fe4f09af'B //[bit length 256]
+
+										
+								}
+
+						
+
+ 					
+						
+				   }
+               }
+
+        }
+   }
+ }
+
+	}
+	}
+	}
+ template S1AP_PDU S1AP_PDU_IUCSRs_S_T1 :=  //"MME S1AP UEID+ENB S1AP UEID+E-RAB SETUP RESPONSE:ENB TEID";
+ {
+	SUCCESSFUL OUTCOME:=
+		{
+		procedureCode:= id_InitialContextSetup,
+		 criticality:=reject,
+		 value_:=
+			 {
+		 InitialContextSetupResponse:=
+	 			{
+ 					protocolIEs:=	
+					{
+							{
+ 						id:=MME_UE_S1AP_ID	,
+							CRITICALITY:= ignore,	
+							value_:=
+								{
+
+ 										MME_UE_S1AP_ID := 1229
+											
+
+								}
+						},
+						{	
+						    id:=eNB_UE_S1AP_ID	,
+							CRITICALITY:= ignore,	
+							value_:=
+								{
+
+ 										ENB_UE_S1AP_ID := 129
+											
+
+								}
+						},
+										{
+ 						   id:=E_RABSetupListCtxtSURes,
+							CRITICALITY :=ignore,
+							value_:=
+								{
+								E_RABSetupListCtxtSURes:=
+								                   {
+                        
+ 													E_RAB_ID:=56,
+ 													Transport_Layer_Address:= '01111111000000000000000101100100'B,  // 7f000164
+ 													GTP_TEID:='11111100000100001011010101101000'B ,//7e10b568
+ 												   ProtocolExtensionContainer := '*'
+		
+										  
+								                   }
+								}
+
+						}
+
+						
+				   }
+               }
+
+        }
+   }
+ }
+
+	
+	
+	
+	
+ template S1AP_PDU S1AP_PDU_UL_NAS_S_T4 :=// "MME S1AP UEID+ENB S1AP UEID+NAS:EMM:ATTCH COMPLETE+ESM:DEFAULT BEARER ACTIVATION ACCEPT+ECGI+TAI";
+	 {
+   INITIATING MESSAGE:=
+               {
+	            procedureCode:=id_uplinkNASTransport
+	            CRITICALITY	:=ignore,
+				value_:=
+					 {
+						 UplinkNASTransport:=
+	 						{
+ 							protocolIEs:=	
+								{
+										{
+						    id:=MME_UE_S1AP_ID,
+							CRITICALITY:= reject,	
+							value_:=
+								{
+
+ 										MME_UE_S1AP_ID:= 1230
+											
+
+								}
+						},
+						{
+ 						   id:=eNB_UE_S1AP_ID	,
+							CRITICALITY :=reject,
+							value_:=
+								{
+								ENB_UE_S1AP_ID := 130
+											
+								}
+						},
+
+                        {
+                        id:=NAS_PDU	,
+						CRITICALITY:= reject,
+ 					    value_:=
+								{
+								NAS_PDU	:=
+								  {
+									ProtocolDiscriminator:='0111'B,  //eps mobility management messages 
+ 									Securityheadertype:='0000'B,  //NAS Plain message ,no security
+									AttachcompleteMessageIdentity:='01000011'B,   // Attachcompletemessagetype
+									ESMmessagecontainer:=
+												{
+													length_=3,
+													ESMmessagecontent:=
+																	{
+																	EPS_Beareridentity:='0101'B,
+																    ProtocolDisriminator:='0010'B,
+ 																	 Procedure_transaction_identity:=0,
+																	 NAS_EPS_session_management_messages:='11000010'B,// Activate default bearer accept
+																	 }
+																	 
+																	 
+									            }								 
+								  }
+						     }				 
+								
+								
+						},
+ 					     {
+
+                         id:=EUTRAN_CGI,
+						 CRITICALITY:=ignore,	
+						 value_:=
+								{
+									EUTRAN_CGI := 
+										{
+ 									PLMNidentity:='123456'O,
+									CellIdentity:='0000000000000000000000001111'B,
+									ProtocolExtensionContainer := omit
+	
+									    }
+								}
+
+						},
+ 						{
+                        id:=TAI,
+						CRITICALITY:= reject,
+ 					    value_:=
+								{
+									TAI := 
+										{
+ 									  PLMNidentity:='123456'O,
+
+									  TAC:='1234'O,
+									  ProtocolExtensionContainer := omit
+
+								        }
+								}
+
+						}	
+						
+                }
+          } 
+
+ 
+       }//
+  }
+  }
+
+
+
+
+
+               
